@@ -1,6 +1,6 @@
 # Intent Recognition
 
-Email Intent Recognition is a Django web application for processing and classifying user queries, with a focus on email intent detection and automation workflows.
+Intent Recognition is a Django web application for processing and classifying user queries, with a focus on email intent detection and automation workflows.
 
 ---
 
