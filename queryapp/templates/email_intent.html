@@ -1,0 +1,450 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Intent Query</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Email Intent Query</h1>
+        
+        <div class="input-group">
+            <label for="context">Context:</label>
+            <textarea id="context" rows="4"></textarea>
+        </div>
+
+        <div class="input-group">
+            <label for="query">Query:</label>
+            <input type="text" id="query" />
+        </div>
+
+        <button id="submitQuery">Submit Query</button>
+
+        <div class="response" id="responseContainer" style="display: none;">
+            <strong>Response:</strong>
+            <p id="responseText"></p>
+        </div>
+    </div>
+
+    <script>
+        // Function to get the token from localStorage (or wherever it's stored)
+        function getToken() {
+            return localStorage.getItem("accessToken"); // Replace with your token storage method
+        }
+
+        // Handle form submission
+        document.getElementById("submitQuery").addEventListener("click", function() {
+            const context = document.getElementById("context").value;
+            const query = document.getElementById("query").value;
+            const token = getToken();  // Get the token
+
+            if (!context || !query) {
+                alert("Please enter both context and query.");
+                return;
+            }
+
+            fetch("http://127.0.0.1:8000/Intent/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`  // Send the token in the Authorization header
+                },
+                body: JSON.stringify({ context: context, query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response) {
+                    document.getElementById("responseText").textContent = data.response;
+                    document.getElementById("responseContainer").style.display = "block";
+                } else if (data.error) {
+                    document.getElementById("responseText").textContent = `Error: ${data.error}`;
+                    document.getElementById("responseContainer").style.display = "block";
+                }
+            })
+            .catch(error => {
+                alert("Error: " + error);
+            });
+        });
+    </script>
+    
+</body>
+</html> 
+
+
+ {% endcomment %}
+
+
+ {% comment %} <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Email Intent Query</title>
+     <style>
+         body {
+             font-family: Arial, sans-serif;
+             margin: 20px;
+         }
+         .container {
+             max-width: 600px;
+             margin: 0 auto;
+             padding: 20px;
+             border: 1px solid #ddd;
+             border-radius: 8px;
+         }
+         .input-group {
+             margin-bottom: 15px;
+         }
+         .input-group label {
+             display: block;
+             font-weight: bold;
+             margin-bottom: 5px;
+         }
+         .input-group input, .input-group textarea {
+             width: 100%;
+             padding: 10px;
+             border: 1px solid #ccc;
+             border-radius: 4px;
+         }
+         button {
+             background-color: #007bff;
+             color: white;
+             padding: 10px 20px;
+             border: none;
+             border-radius: 4px;
+             cursor: pointer;
+         }
+         button:hover {
+             background-color: #0056b3;
+         }
+         .response {
+             margin-top: 20px;
+             padding: 10px;
+             background-color: #f1f1f1;
+             border: 1px solid #ddd;
+             border-radius: 4px;
+         }
+         .response-item {
+             margin-bottom: 15px;
+         }
+     </style>
+ </head>
+ <body>
+ 
+     <div class="container">
+         <h1>Email Intent Query</h1>
+         
+         <div class="input-group">
+             <label for="context">Context:</label>
+             <textarea id="context" rows="4"></textarea>
+         </div>
+ 
+         <button id="submitQuery">Submit Query</button>
+ 
+         <div class="response" id="responseContainer" style="display: none;">
+             <h3>Predicted Responses:</h3>
+             <!-- Responses will be dynamically added here -->
+         </div>
+     </div>
+ 
+     <script>
+         // Function to get the token from localStorage (or wherever it's stored)
+         function getToken() {
+             return localStorage.getItem("accessToken"); // Replace with your token storage method
+         }
+ 
+         // Handle form submission
+         document.getElementById("submitQuery").addEventListener("click", function() {
+             const context = document.getElementById("context").value;
+             const token = getToken();  // Get the token
+ 
+             if (!context) {
+                 alert("Please enter the context.");
+                 return;
+             }
+ 
+             fetch("http://127.0.0.1:8000/Intent/", {
+                 method: "POST",
+                 headers: {
+                     "Content-Type": "application/json",
+                     "Authorization": `Bearer ${token}`  // Send the token in the Authorization header
+                 },
+                 body: JSON.stringify({ context: context })
+             })
+             .then(response => {
+                 const contentType = response.headers.get("Content-Type");
+ 
+                 if (contentType && contentType.includes("application/json")) {
+                     return response.json();  // Parse JSON if the response is JSON
+                 } else {
+                     return response.text();  // Otherwise, parse as text (error case, HTML response)
+                 }
+             })
+             .then(data => {
+                 const responseContainer = document.getElementById("responseContainer");
+ 
+                 if (data.responses) {
+                     responseContainer.style.display = "block";
+                     responseContainer.innerHTML = "<h3>Predicted Responses:</h3>";
+ 
+                     // Loop through the responses and display each one
+                     Object.keys(data.responses).forEach(function(query) {
+                         const response = data.responses[query];
+                         responseContainer.innerHTML += `
+                             <div class="response-item">
+                                 <strong>Query: </strong> ${query}
+                                 <strong>Response: </strong> ${response}
+                             </div>
+                         `;
+                     });
+                 } else if (data.error) {
+                     responseContainer.style.display = "block";
+                     responseContainer.innerHTML = `
+                         <div class="response-item">
+                             <strong>Error: </strong> ${data.error}
+                         </div>
+                     `;
+                 } else {
+                     responseContainer.style.display = "block";
+                     responseContainer.innerHTML = `
+                         <div class="response-item">
+                             <strong>Error: </strong> Unexpected response.
+                         </div>
+                     `;
+                 }
+             })
+             .catch(error => {
+                 alert("Error: " + error.message);
+             });
+         });
+     </script>
+     
+ </body>
+ </html> {% endcomment %}
+
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Intent Query</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: #007bff;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9f7fd;
+            border-radius: 8px;
+            border: 1px solid #b1e0fa;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .response-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .loading {
+            text-align: center;
+            font-size: 18px;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Email Intent Query</h1>
+
+        <div class="input-group">
+            <label for="context">Context:</label>
+            <textarea id="context" rows="6" placeholder="Enter the context here..."></textarea>
+        </div>
+
+        <button id="submitQuery">Submit Query</button>
+
+        <div class="loading" id="loading" style="display: none;">Processing your request...</div>
+
+        <div class="response" id="responseContainer" style="display: none;">
+            <h3>Predicted Responses:</h3>
+            <!-- Responses will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        // Function to get the token from localStorage (or wherever it's stored)
+        function getToken() {
+            return localStorage.getItem("accessToken"); // Replace with your token storage method
+        }
+
+        // Handle form submission
+        document.getElementById("submitQuery").addEventListener("click", function() {
+            const context = document.getElementById("context").value;
+            const token = getToken();  // Get the token
+
+            if (!context) {
+                alert("Please enter the context.");
+                return;
+            }
+
+            document.getElementById("loading").style.display = "block";
+            document.getElementById("responseContainer").style.display = "none";
+
+            fetch("http://127.0.0.1:8000/Intent/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`  // Send the token in the Authorization header
+                },
+                body: JSON.stringify({ context: context })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("loading").style.display = "none";
+                const responseContainer = document.getElementById("responseContainer");
+                responseContainer.style.display = "block";
+                responseContainer.innerHTML = "<h3>Predicted Responses:</h3>";
+
+                if (data.responses) {
+                    // Loop through the responses and display each one
+                    Object.keys(data.responses).forEach(function(query) {
+                        const response = data.responses[query];
+                        responseContainer.innerHTML += `
+                            <div class="response-item success">
+                                <p><strong>Query:</strong> ${query}</p>
+                                <p><strong>Response:</strong> ${response}</p>
+                            </div>
+                        `;
+                    });
+                } else if (data.error) {
+                    responseContainer.innerHTML = `
+                        <div class="response-item error">
+                            <strong>Error: </strong> ${data.error}
+                        </div>
+                    `;
+                } else {
+                    responseContainer.innerHTML = `
+                        <div class="response-item error">
+                            <strong>Error: </strong> Unexpected response.
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                document.getElementById("loading").style.display = "none";
+                alert("Error: " + error.message);
+            });
+        });
+    </script>
+
+</body>
+</html>
